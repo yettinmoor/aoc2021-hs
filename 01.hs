@@ -1,13 +1,16 @@
-import           Control.Monad
+import           Data.List
 
 windows :: Int -> [a] -> [[a]]
-windows n = takeWhile (\xs -> length xs == n) . liftM2 (:) (take n) (windows n . tail)
+windows n = takeWhile (\xs -> length xs == n) . map (take n) . tails
+
+increasingPairs :: [Int] -> [(Int, Int)]
+increasingPairs = filter (uncurry (<)) . (zip <*> tail)
 
 part1 :: [Int] -> Int
-part1 = length . filter id . liftM2 (zipWith (<)) id tail
+part1 = length . increasingPairs
 
 part2 :: [Int] -> Int
-part2 = part1 . map sum . windows 3
+part2 = length . increasingPairs . map sum . windows 3
 
 main :: IO ()
 main = do
