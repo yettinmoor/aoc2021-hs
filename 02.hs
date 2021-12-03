@@ -3,37 +3,28 @@ import           Data.Function
 import           State
 
 data Inst
-  = Forward Int
-  | Up Int
-  | Down Int
+  = X Int
+  | Y Int
 
 parseInst :: String -> Inst
 parseInst s =
   case words s of
-    ["forward", x] -> Forward $ read x
-    ["up", x]      -> Up $ read x
-    ["down", x]    -> Down $ read x
+    ["forward", d] -> X $ read d
+    ["up", d]      -> Y $ -read d
+    ["down", d]    -> Y $ read d
     _              -> undefined
 
-step1 :: Inst -> (Int, Int)
-step1 (Forward x) = (x, 0)
-step1 (Up x)      = (0, -x)
-step1 (Down x)    = (0, x)
-
--- I cannot believe this worked
-step2 :: Inst -> State Int (Int, Int)
-step2 (Forward x) = gets $ \aim -> (x, x * aim)
-step2 (Up x)      = modify (subtract x) >> return (0, 0)
-step2 (Down x)    = modify (+ x) >> return (0, 0)
-
-foldPairs :: [(Int, Int)] -> Int
-foldPairs = uncurry (*) . foldr1 (\(a, b) (c, d) -> (a + c, b + d))
-
 part1 :: [Inst] -> Int
-part1 = foldPairs . map step1
+part1 = uncurry (*) . foldl go (0, 0)
+  where
+    go (x, y) (X d) = (x + d, y)
+    go (x, y) (Y d) = (x, y + d)
 
 part2 :: [Inst] -> Int
-part2 = foldPairs . flip evalState 0 . mapM step2
+part2 = uncurry (*) . fst . foldl go ((0, 0), 0)
+  where
+    go ((x, y), aim) (X d) = ((x + d, y + d * aim), aim)
+    go ((x, y), aim) (Y d) = ((x, y), aim + d)
 
 main :: IO ()
 main = do
