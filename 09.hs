@@ -33,7 +33,7 @@ toGrid :: [[a]] -> Grid a
 toGrid = Map.fromList . concat . zipWith zip [[(y, x) | x <- [0 ..]] | y <- [0 ..]]
 
 input :: IO [[Int]]
-input = map (map digitToInt) . lines <$> readFile "08.txt"
+input = map (map digitToInt) . lines <$> readFile "09.txt"
 
 test :: IO [[Int]]
 test =
